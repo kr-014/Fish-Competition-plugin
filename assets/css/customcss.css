@@ -1,0 +1,28 @@
+/*!******************************************************************************
+ * Copyright (c) 2018, WP Popup Pro
+ ******************************************************************************/
+
+/*.display_rules_continer {float: left; width: 100%;}
+.colum-2 {float: left;width: 20%;}*/
+
+
+
+.popuppro-display_rules_continer .shortcode-section {    margin: 0px 12px;
+    padding: 10px 17px;
+    background: #e6e6e6;
+    border: 1px solid #b7b5b5;
+    margin-top: -4px;}
+
+.display_matabox_sections_continer> span {
+    width: 201px;
+    display: inline-block;
+}
+
+.popuppro-display_rules_continer .select2-container .select2-selection--single {
+        height: 37px !important;
+    padding: 4px 4px;
+    font-size: 15px;
+}
+
+.popuppro-display_rules_continer .select2-container--default .select2-selection--single .select2-selection__arrow {    top: 5px !important;
+    right: 3px !important;}
