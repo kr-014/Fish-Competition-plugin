@@ -126,21 +126,40 @@ class Fishapp_Admin_instance {
 		if(isset($instance['otherattr'])){
 			$otherattr = 'class="'.$instance['otherattr'].'"';
 		}
+		if(isset($instance['getval'])){
+			$valget = 'value="'.$instance['getval'].'"';
+		}
+	
 
 		$html .= '<div class="'.$instance['class'].'-wrap">';
-		$html .= '<label>'.$instance['label'].'</label>';
-		if($instance['type']=='radio'){
+		$html .= '<label>'.$instance['label'].'</label><br>';
+		if($instance['type']=='textarea'){
+			$html .= '<textarea  name="'.$instance['name'].'" '.$class.' '.$id.'   '.$placeholder.' '.$otherattr.' rows="'.$instance['rows'].'" cols="'.$instance['cols'].'" >'.$instance['getval'].'</textarea>';
+			if(isset($instance['postfix'])){
+				$html .= $instance['postfix'];
+			}
+		} else if($instance['type']=='radio'){
 			$html .= '<div class="options_val">';
 			foreach ($instance['options'] as $key => $value) {
-				$html .= '<input type="'.$instance['type'].'" name="'.$instance['name'].'" value="'.$key.'" '.$class.'/>';
+				$checked = '';
+				if($instance['getval']==$key){
+					$checked="checked";
+				}
+				
+				$html .= '<input type="'.$instance['type'].'" name="'.$instance['name'].'" value="'.$key.'" '.$class.' '.$checked.'/>';
 				$html .= '<label>'.$value.'</label>';
 			}
 			$html .= '</div>';
 			
 
 		} else {
-			
-			$html .= '<input type="'.$instance['type'].'" name="'.$instance['name'].'" '.$class.' '.$id.'   '.$placeholder.' '.$otherattr.'/>';
+			if($instance['type']=='checkbox'){
+				$checkedbox = '';
+				if($instance['getval']=='on'){
+					$checkedbox="checked";
+				}
+			}
+			$html .= '<input type="'.$instance['type'].'" name="'.$instance['name'].'" '.$class.' '.$id.'   '.$placeholder.' '.$otherattr.' '.$valget.' '.$checkedbox.'/>';
 			if(isset($instance['postfix'])){
 				$html .= $instance['postfix'];
 			}
