@@ -1,0 +1,15 @@
+#postbox-container-2 textarea{width: 100%;}
+#postbox-container-2 label{margin-bottom: 10px!important;font-weight: 500;display: inline-block;}
+#postbox-container-2 input[type=checkbox]+label, #postbox-container-2 input[type=radio]+label{display: initial!important;}
+.options_val .Visibility_option{width: 49%;
+    float: left;
+    background: #f7f7f7;
+    padding: 5px 0px 11px 5px;}
+.margin_btm{margin-bottom: 20px;}
+.photo_visibility-wrap{float: left;width: 100%; clear: both;}
+#competition_other_settings_meta_box .compi_start_date-wrap,#competition_other_settings_meta_box .compi_end_date-wrap{width: 50%; float: left;}
+.setting_main_head {margin-bottom: 15px;display: inline-block;font-size: 14px;}
+.win_set{background: #f7f7f7;
+    padding: 0px 0px 11px 5px;}
+.com_date {background: #f7f7f7;
+    padding: 0px 0px 11px 5px; float: left;width: 100%; clear: both;margin-bottom: 20px;}  

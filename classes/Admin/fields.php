@@ -93,8 +93,8 @@ class Fishapp_Admin_fields {
 	}
 	public static function show_competition_settings_meta_box($post){
 		$competition_settings = Fishapp_Admin_fields::get_fishapp_competition_meta_value('competition_settings');
-
-		$photo_visibility = array('label'=>'Photo Visibility','type'=>'radio','name'=>'competition_settings[photo_visibility]','id'=>'photo_visibility','class'=>'photo_visibility',
+		
+        $photo_visibility = array('label'=>'Photo Visibility','type'=>'radio','name'=>'competition_settings[photo_visibility]','id'=>'photo_visibility','class'=>'photo_visibility',
 									'getval' =>$competition_settings['photo_visibility']);
 		$photo_visibility ['options'] = array('public'=>'Public','competition'=>'Competition');
 
@@ -107,9 +107,11 @@ class Fishapp_Admin_fields {
 
 		echo Fishapp_Admin_instance::input_get_display($photo_visibility);
 		echo Fishapp_Admin_instance::input_get_display($video_upload_allowed);
-		echo '<br><strong>Winners settings</strong>';
+		echo '<div class="win_set">';
+		echo '<br><strong class="setting_main_head">Winners settings</strong>';
 		echo Fishapp_Admin_instance::input_get_display($top_winners);
 		echo Fishapp_Admin_instance::input_get_display($Price_information);
+		echo '</div>';
 
 	}
 	
@@ -146,11 +148,12 @@ class Fishapp_Admin_fields {
 		echo Fishapp_Admin_instance::input_get_display($daily_catching_limit);
 		echo Fishapp_Admin_instance::input_get_display($daily_photo_uploads_limit_per_User);
 		echo Fishapp_Admin_instance::input_get_display($live_streaming_allowed);
-
-		echo '<br><strong>Start Date and end Date</strong>';
+        echo '<div class="com_date">';
+		echo '<br><strong class="setting_main_head">Start Date and end Date</strong>';
 		echo '<div class="compi_start_end_date">';
 			echo Fishapp_Admin_instance::input_get_display($compi_start_date);
 			echo Fishapp_Admin_instance::input_get_display($compi_end_date);
+		echo '</div>';
 		echo '</div>';
 		echo Fishapp_Admin_instance::input_get_display($option_compi_end_date);
 

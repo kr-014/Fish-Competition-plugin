@@ -131,8 +131,10 @@ class Fishapp_Admin_instance {
 		}
 	
 
-		$html .= '<div class="'.$instance['class'].'-wrap">';
-		$html .= '<label>'.$instance['label'].'</label><br>';
+		$html .= '<div class="'.$instance['class'].'-wrap margin_btm">';
+		if($instance['type']!='checkbox'){
+			$html .= '<label>'.$instance['label'].'</label><br>';
+		}
 		if($instance['type']=='textarea'){
 			$html .= '<textarea  name="'.$instance['name'].'" '.$class.' '.$id.'   '.$placeholder.' '.$otherattr.' rows="'.$instance['rows'].'" cols="'.$instance['cols'].'" >'.$instance['getval'].'</textarea>';
 			if(isset($instance['postfix'])){
@@ -145,9 +147,10 @@ class Fishapp_Admin_instance {
 				if($instance['getval']==$key){
 					$checked="checked";
 				}
-				
+				$html .= '<div class="Visibility_option">';
 				$html .= '<input type="'.$instance['type'].'" name="'.$instance['name'].'" value="'.$key.'" '.$class.' '.$checked.'/>';
 				$html .= '<label>'.$value.'</label>';
+				$html .= '</div>';
 			}
 			$html .= '</div>';
 			
@@ -160,6 +163,9 @@ class Fishapp_Admin_instance {
 				}
 			}
 			$html .= '<input type="'.$instance['type'].'" name="'.$instance['name'].'" '.$class.' '.$id.'   '.$placeholder.' '.$otherattr.' '.$valget.' '.$checkedbox.'/>';
+			if($instance['type']=='checkbox'){
+				$html .= '<label>'.$instance['label'].'</label>';
+			}
 			if(isset($instance['postfix'])){
 				$html .= $instance['postfix'];
 			}
@@ -179,7 +185,7 @@ class Fishapp_Admin_instance {
 		if(isset($instance['placeholder'])){
 			$placeholder = 'placeholder="'.$instance['placeholder'].'"';
 		}
-		$html .= '<div class="'.$class.'-wrap">';
+		$html .= '<div class="'.$class.'-wrap margin_btm">';
 			$html .= '<label>'.$instance['label'].'</label>';
 			$html .= '<textarea name="'.$instance['name'].'" '.$class.' '.$id.'  '.$placeholder.' style="width:99%;max-width:25em;"></textarea>';
 		$html .= '</div>';

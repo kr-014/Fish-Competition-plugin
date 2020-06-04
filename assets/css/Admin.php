@@ -10,7 +10,7 @@ class Fishapp_Admin {
 	}
 
 	function admin_style() {
-		wp_enqueue_style('admin-styles', POPASSETS_URL.'/css/admin.css');
+		wp_enqueue_style('admin-styles', POPASSETS_URL.'css/admin.css');
 	}
 	  
 
