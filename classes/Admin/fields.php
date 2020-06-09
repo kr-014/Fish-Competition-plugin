@@ -137,9 +137,9 @@ class Fishapp_Admin_fields {
 		$daily_photo_uploads_limit_per_User = array('label'=>'Daily photo uploads limit/User','type'=>'number','name'=>'competition_othere_settings[daily_photo_uploads_limit_per_User]','id'=>'daily_photo_uploads_limit_per_User','class'=>'daily_photo_uploads_limit_per_User',
 		'getval' =>$com_othere_set['daily_photo_uploads_limit_per_User']);
 		
-		$compi_start_date = array('label'=>'Start Date','type'=>'input','name'=>'competition_othere_settings[compi_start_date]','id'=>'compi_start_date','class'=>'compi_start_date',
+		$compi_start_date = array('label'=>'Start Date','type'=>'input','name'=>'competition_othere_settings[compi_start_date]','id'=>'compi_start_date','class'=>'compi_start_date date_field',
 		'getval' =>$com_othere_set['compi_start_date']);
-		$compi_end_date = array('label'=>'End Date','type'=>'input','name'=>'competition_othere_settings[compi_end_date]','id'=>'compi_end_date','class'=>'compi_end_date',
+		$compi_end_date = array('label'=>'End Date','type'=>'input','name'=>'competition_othere_settings[compi_end_date]','id'=>'compi_end_date','class'=>'compi_end_date date_field',
 		'getval' =>$com_othere_set['compi_end_date']);
 
 		$option_compi_end_date = array('label'=>'Option to start and end the competition','type'=>'input','name'=>'competition_othere_settings[option_compi_end_date]','id'=>'option_compi_end_date','class'=>'option_compi_end_date',

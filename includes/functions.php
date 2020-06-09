@@ -17,6 +17,10 @@ add_action( 'rest_api_init', function () {
        'methods' => 'POST',
        'callback' => 'fishappapi_signup_func',
     ));
+    register_rest_route( 'fishappapi/v1', '/social_signup/', array(
+       'methods' => 'POST',
+       'callback' => 'fishappapi_social_signup_func',
+    ));
     register_rest_route( 'fishappapi/v1', '/forgot_password/', array(
        'methods' => 'POST',
        'callback' => 'fishappapi_forgot_password_func',
@@ -30,7 +34,7 @@ add_action( 'rest_api_init', function () {
        'methods' => 'POST',
        'callback' => 'fishappapi_signup_OTP_func',
     ));
-    register_rest_route( 'fishappapi/v1', '/forget_opt/', array(
+    register_rest_route( 'fishappapi/v1', '/forget_otp/', array(
        'methods' => 'POST',
        'callback' => 'fishappapi_forget_OTP_func',
     ));
@@ -116,12 +120,14 @@ function fishappapi_signup_func( $data ) {
                 update_user_meta( $user_id , 'auth_token', $token );
                 update_user_meta( $user_id , 'auth_OTP_signup', $otp );
                 update_user_meta( $user_id , 'auth_OTP_passed', 0 );
+
+                $getsignupOPTget = get_user_meta( $user_id , 'auth_OTP_signup', true );
                 /* Return generated token and user ID*/
                 $response['success'] = true;
                 $response['code'] = 200;
                 $response['data'] = array(
                     'auth_token'    =>  $token,
-                    'OTP'     => $otp,
+                    'OTP'     => $getsignupOPTget,
                     'user_id'       =>  $user_id,
                     'user_login'    =>  $_POST['email']
                 );
@@ -134,6 +140,80 @@ function fishappapi_signup_func( $data ) {
                   'success'    => false
                 );
             }
+        }
+        return $response;
+}   
+
+
+
+function fishappapi_social_signup_func( $data ) {
+    require_once($_SERVER['DOCUMENT_ROOT']."/wp-load.php");
+    header("Access-Control-Allow-Origin: *");
+    $rest_json = file_get_contents("php://input");
+    $_POST = json_decode($rest_json, true);
+    http_response_code(200);
+        $response = array(
+            'data'      => array(),
+            'code'      => 400,
+            'message'       => 'Please required all Field.',
+            'success'    => false
+        );
+        foreach($_POST as $k => $value){
+            $_POST[$k] = sanitize_text_field($value);
+        }
+
+        $user = get_user_by( 'email', $_POST['email'] );
+        if ( get_user_by( 'email', $_POST['email'] ) || get_user_by( 'login', $_POST['email'] ) ){
+
+            if ( $user ) {
+                //$password_check = wp_check_password( $_REQUEST['password'], $user->user_passs, $user->ID );
+                $password_check = wp_authenticate($user->data->user_login,$_POST['password'] );
+                //return $password_check;
+                if ( $password_check->data ){
+                    /* Generate a unique auth token */
+                    $token = uniqid();
+                    /* Store / Update auth token in the database */
+                    if( update_user_meta( $user->ID, 'auth_token', $token ) ){
+                        /* Return generated token and user ID*/
+                        $response['success'] = true;
+                        $response['code'] = 200;
+                        $response['data'] = array(
+                            'auth_token'    =>  $token,
+                            'user_id'       =>  $user->ID,
+                            'user_login'    =>  $user->user_login
+                        );
+                        $response['message'] = 'Successfully Authenticated';
+                    }
+                }
+            } else {
+                $response = array(
+                    'data'      => array(),
+                    'code'      => 400,
+                    'message'       => 'Please check credentials.',
+                    'success'    => false
+                );
+            }
+        } else {
+            $token = uniqid();
+            $user_id = wp_create_user( $_POST['email'], $_POST['password'], $_POST['email'] );
+            update_user_meta( $user_id , 'auth_token', $token );
+            // update_user_meta( $user_id , 'auth_OTP_signup', $otp );
+            // if(isset($_POST['type']) && !empty($_POST['type'])){
+            // 	update_user_meta( $user_id , 'auth_social_type', $_POST['type'] );
+            // }
+            // update_user_meta( $user_id , 'auth_OTP_passed', 0 );
+
+            $getsignupOPTget = get_user_meta( $user_id , 'auth_OTP_signup', true );
+            /* Return generated token and user ID*/
+            $response['success'] = true;
+            $response['code'] = 200;
+            $response['data'] = array(
+                'auth_token'    =>  $token,
+                'user_id'       =>  $user_id,
+                'user_login'    =>  $_POST['email']
+            );
+            $response['message'] = 'Thank you for Signup.';
+            
         }
         return $response;
 }   

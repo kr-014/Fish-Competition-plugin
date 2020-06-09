@@ -229,6 +229,7 @@ class fishappweb_main {
 	private function includes() {
 		/** Loads most of our core functions */
 		require_once self::$DIR . 'includes/functions.php';
+		require_once self::$DIR . 'includes/functions_filter.php';
 	}
 
 
