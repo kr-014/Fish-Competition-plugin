@@ -112,9 +112,9 @@ class Fishapp_Admin_Pages {
 	public static function reorder_admin_submenu() {
 		global $submenu;
 
-		if ( isset( $submenu['edit.php?post_type=popup'] ) ) {
+		if ( isset( $submenu['edit.php?post_type=fishapp-competition'] ) ) {
 			// Sort the menu according to your preferences
-			usort( $submenu['edit.php?post_type=popup'], array( __CLASS__, 'reorder_submenu_array' ) );
+			usort( $submenu['edit.php?post_type=fishapp-competition'], array( __CLASS__, 'reorder_submenu_array' ) );
 		}
 	}
 

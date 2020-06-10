@@ -142,8 +142,8 @@ class Fishapp_Admin_fields {
 		$compi_end_date = array('label'=>'End Date','type'=>'input','name'=>'competition_othere_settings[compi_end_date]','id'=>'compi_end_date','class'=>'compi_end_date date_field',
 		'getval' =>$com_othere_set['compi_end_date']);
 
-		$option_compi_end_date = array('label'=>'Option to start and end the competition','type'=>'input','name'=>'competition_othere_settings[option_compi_end_date]','id'=>'option_compi_end_date','class'=>'option_compi_end_date',
-		'getval' =>$com_othere_set['option_compi_end_date']);
+		// $option_compi_end_date = array('label'=>'Option to start and end the competition','type'=>'input','name'=>'competition_othere_settings[option_compi_end_date]','id'=>'option_compi_end_date','class'=>'option_compi_end_date',
+		// 'getval' =>$com_othere_set['option_compi_end_date']);
 
 		echo Fishapp_Admin_instance::input_get_display($daily_catching_limit);
 		echo Fishapp_Admin_instance::input_get_display($daily_photo_uploads_limit_per_User);
@@ -155,7 +155,7 @@ class Fishapp_Admin_fields {
 			echo Fishapp_Admin_instance::input_get_display($compi_end_date);
 		echo '</div>';
 		echo '</div>';
-		echo Fishapp_Admin_instance::input_get_display($option_compi_end_date);
+		// echo Fishapp_Admin_instance::input_get_display($option_compi_end_date);
 
     }
 
@@ -181,6 +181,9 @@ class Fishapp_Admin_fields {
 			update_post_meta($post_id,'Bonus_points',$_POST['Bonus_points']);
 			update_post_meta($post_id,'competition_settings',$_POST['competition_settings']);
 			update_post_meta($post_id,'competition_othere_settings',$_POST['competition_othere_settings']);
+
+			update_post_meta($post_id,'competition_start_date',strtotime($_POST['competition_othere_settings']['compi_start_date']));
+			update_post_meta($post_id,'competition_end_date',strtotime($_POST['competition_othere_settings']['compi_end_date']));
     	}
 	}
 	
@@ -202,9 +205,4 @@ class Fishapp_Admin_fields {
     //     }
     //     return self::$instance;
     // }
-
-
-
-
-
 }

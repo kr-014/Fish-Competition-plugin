@@ -9,64 +9,97 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if (is_admin()){
     //this hook will create a new filter on the admin area for the specified post type
+    
     add_action( 'restrict_manage_posts', function(){
          global $wpdb, $table_prefix;
-        
-        if(isset($_GET['post_type']) && isset($_GET['post_type'])=='fishapp-competition')
+        if(isset($_GET['post_type']) && $_GET['post_type']=='fishapp-competition'){
          $post_type = 'fishapp-competition';
-  
-         //only add filter to post type you want
-         if ($post_type == 'fishapp-competition'){
-             //query database to get a list of years for the specific post type:
-             $values = array();
-             $query_years = $wpdb->get_results("SELECT year(post_date) as year from ".$table_prefix."posts
-                     where post_type='".$post_type."'
-                     group by year(post_date)
-                     order by post_date");
-             foreach ($query_years as &$data){
-                 $values[$data->year] = $data->year;
-             }
- 
-             //give a unique name in the select field
              ?>
              <div class="custom_filter_new">
                 <div class="filed_search">                
-                    <label for="start_date">Start Data</label>
-                    <input type="text" name="start_date" class="start_date filter-field date_field"/>
+                    
+                    <input type="text" name="start_date" class="start_date filter-field date_field" value="<?php if(isset($_GET['start_date']))echo $_GET['start_date'];?>" placeholder="Start Data"/>
                 </div>
                 <div class="filed_search">                
-                    <label for="end_date">End Data</label>
-                    <input type="text" name="end_date" class="end_date filter-field date_field"/>
+                    <input type="text" name="end_date" class="end_date filter-field date_field" value="<?php if(isset($_GET['end_date']))echo $_GET['end_date'];?>" placeholder="End Data"/>
                 </div>
                 <div class="filed_search">                
                     <select type="text" name="Comp_status" class="Comp_status filter-field"/>
                         <option value="">Status</option>
-                        <option value="completed">Completed</option>
-                        <option value="running">Running</option>
-                        <option value="stop">Stop</option>
+                        <option value="completed" <?php if( $_GET['Comp_status'] == 'completed') { echo 'selected="selected"'; } else{echo '';} ?>>Completed</option>
+                        <option value="running" <?php if( $_GET['Comp_status'] == 'running') { echo 'selected="selected"'; } else{echo '';} ?>>Running</option>
+                        <option value="stop" <?php if( $_GET['Comp_status'] == 'stop') { echo 'selected="selected"'; } else{echo '';} ?>>Stop</option>
                     </select>
                 </div>
              </div>
              <?php
-         }
+        }
      });
  
      //this hook will alter the main query according to the user's selection of the custom filter we created above:
      add_filter( 'parse_query', function($query){
          global $pagenow;
+        
          if(isset($_GET['post_type']) && isset($_GET['post_type'])=='fishapp-competition')
          $post_type = 'fishapp-competition';
- 
-         if ($post_type == 'fishapp-competition' && $pagenow=='edit.php' && isset($_GET['admin_filter_year']) && !empty($_GET['admin_filter_year'])) {
-             $query->query_vars['year'] = $_GET['admin_filter_year'];
+         $meta_query_args = array();
+         if((isset($_GET['start_date']) && !empty($_GET['start_date'])) || 
+         (isset($_GET['end_date']) && !empty($_GET['end_date'])) || 
+         (isset($_GET['Comp_status']) && !empty($_GET['Comp_status']))){
+            
+            $meta_query_args['relation'] = 'AND';
+            if((isset($_GET['start_date']) && !empty($_GET['start_date']))) 
+            {   
+                $meta_query_args[] = array(
+                    'key'     => 'competition_start_date',
+                    'value' => strtotime($_GET['start_date']),
+                    'compare' => '<='
+                );
+                $meta_query_args[] = array(
+                    'key'     => 'competition_end_date',
+                    'value' => strtotime($_GET['start_date']),
+                    'compare' => '>'
+                );
+            }
+            if((isset($_GET['end_date']) && !empty($_GET['end_date']))) 
+            {   
+                $meta_query_args[] = array(
+                    'key'     => 'competition_end_date',
+                    'value' => strtotime($_GET['end_date']),
+                    'compare' => '<='
+                );
+                // $meta_query_args[] = array(
+                //     'key'     => 'competition_start_date',
+                //     'value' => strtotime($_GET['end_date']),
+                //     'compare' => '<'
+                // );
+            }
+            $valueststuss = 0;
+            if(isset($_GET['Comp_status']) && !empty($_GET['Comp_status'])) 
+            {   
+                if($_GET['Comp_status']=='stop'){
+                    $valueststuss = 1;
+                }
+                $meta_query_args[] = array(
+                    'key'     => 'option_compi_end_date',
+                    'value' => $valueststuss,
+                    'compare' => '='
+                );
+            }
+
+            $query->query_vars['meta_query'] =  $meta_query_args;
+            
          }
+
+        //  if ($post_type == 'fishapp-competition' && $pagenow=='edit.php' && isset($_GET['admin_filter_year']) && !empty($_GET['admin_filter_year'])) {
+        //      $query->query_vars['year'] = $_GET['admin_filter_year'];
+        //  }
      });
  }
 
 
  // Update the columns shown on the custom post type edit.php view - so we also have custom columns
 add_filter('manage_fishapp-competition_posts_columns' , 'fishapp_competition_columns');
-
 function fishapp_competition_columns($columns){
     // Remove Author and Comments from Columns and Add custom column 1, custom column 2 and Post Id
     return array(
@@ -83,24 +116,30 @@ function fishapp_competition_columns($columns){
 
 // this fills in the columns that were created with each individual post's value
 add_action( 'manage_fishapp-competition_posts_custom_column' , 'fill_fishapp_competition_columns', 10, 2 );
-            
 function fill_fishapp_competition_columns( $column, $post_id ) {
     // Fill in the columns with meta box info associated with each post
     $othere_details = get_post_meta( $post_id ,'competition_othere_settings' , true ); 
     switch ( $column ) {
         case 'start_date' :
             if(isset($othere_details['compi_start_date']) && !empty($othere_details['compi_start_date']))
-            echo $othere_details['compi_start_date'];
+            //echo $othere_details['compi_start_date'];
+            echo date('m/d/Y', get_post_meta( $post_id ,'competition_start_date' , true ));
             break;
         case 'end_date' :
             if(isset($othere_details['compi_end_date']) && !empty($othere_details['compi_end_date']))
-            echo $othere_details['compi_end_date'];
+            //echo $othere_details['compi_end_date'];
+            echo date('m/d/Y', get_post_meta( $post_id ,'competition_end_date' , true ));
                 break;
         case 'participants' :
-            echo '<a href="#">View</a>';
+            echo '<a href="'.site_url().'/wp-admin/edit.php?post_type=fishapp-participants&comp='.$post_id.'">View</a>';
                 break; 
         case 'stop_status' :
-            echo '<input type="checkbox" name="stop_compi" data-id="'.$post_id.'">';
+            $checks = '';
+            $comp_stop_true = get_post_meta($post_id,'option_compi_end_date',true);
+            if($comp_stop_true==1){
+                $checks = 'checked="checked"';
+            }
+            echo '<input type="checkbox" name="stop_compi" data-id="'.$post_id.'" '.$checks.'>';
                 break;                
         case 'action_work' :
             echo '<a href="'.get_post_permalink($post_id).'">View</a>';
@@ -113,13 +152,9 @@ function fill_fishapp_competition_columns( $column, $post_id ) {
 
 add_action( 'wp_ajax_stop_comp', '_ajax_handler_for_stop_funtion' );    // If called from admin panel
 add_action( 'wp_ajax_nopriv_stop_comp', '_ajax_handler_for_stop_funtion' );
-
-
 function _ajax_handler_for_stop_funtion() {
-    // print_r($_POST);
-    echo 'll';
-    // Make your response and echo it.
-
-    // Don't forget to stop execution afterward.
+    if(isset($_POST['comp_id']) && isset($_POST['check'])) {
+        update_post_meta($_POST['comp_id'],'option_compi_end_date',$_POST['check']);
+    }
     wp_die();
 }

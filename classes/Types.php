@@ -38,6 +38,27 @@ class Fishapp_Types {
 			) );
 			register_post_type( 'fishapp-competition', apply_filters( 'fishapp_competition_post_type_args', $fishapp_args ) );
 		}
+		if ( ! post_type_exists( 'fishapp-participants ' ) ) {
+			$labels = Fishapp_Types::post_type_labels( __( 'Participants', 'fishapp-participants' ), __( 'Participants', 'fishapp-participants' ) );
+
+			$labels['menu_name'] = __( 'participants', 'fishapp-participants' );
+
+			$fishapp_args = apply_filters( 'fishapp_participants_post_type_args', array(
+				'labels'              => $labels,
+				'public'              => true,
+				'publicly_queryable'  => true,
+				'query_var'           => true,
+				'rewrite'             => true,
+				'exclude_from_search' => true,
+				'show_in_nav_menus'   => true,
+				'show_ui'             => true,
+				'menu_icon'           => FISHAPP_URL . '/assets/images/admin/dashboard-icon.png',
+				'menu_position'       => 20.292892729,
+				'supports' => array('title','editor','thumbnail')
+				
+			) );
+			register_post_type( 'fishapp-participants', apply_filters( 'fishapp_participants_post_type_args', $fishapp_args ) );
+		}
 	}
 
 	/**

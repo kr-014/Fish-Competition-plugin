@@ -13,3 +13,20 @@
     padding: 0px 0px 11px 5px;}
 .com_date {background: #f7f7f7;
     padding: 0px 0px 11px 5px; float: left;width: 100%; clear: both;margin-bottom: 20px;}  
+.custom_filter_new{width: 460px;
+    float: left;}
+.filed_search{float: left;
+    margin-right: 6px;
+    max-width: 165px;}
+.column-participants a,.column-action_work a{background: #007bbd;
+    color: #fff;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    vertical-align: middle;
+} 
+.column-action_work a{margin-right:10px;}    
+    
+    
+    
+    
