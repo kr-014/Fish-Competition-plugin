@@ -13,6 +13,8 @@ class Fishapp_Admin {
 		wp_localize_script( 'FrontEndAjax', 'ajax', array(
 			'url' => admin_url( 'admin-ajax.php' )
 		) );
+		wp_enqueue_media();
+		
 		wp_enqueue_style('admin-styles', POPASSETS_URL.'/css/admin.css');
 		wp_enqueue_script( 'jQuery Custom', POPASSETS_URL.'/js/custom.js');
 		wp_enqueue_script( 'jQuery UI Datepicker', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js');

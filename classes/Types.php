@@ -33,7 +33,7 @@ class Fishapp_Types {
 				'show_ui'             => true,
 				'menu_icon'           => FISHAPP_URL . '/assets/images/admin/dashboard-icon.png',
 				'menu_position'       => 20.292892729,
-				'supports' => array('title','editor','thumbnail')
+				'supports' => array('title')
 				
 			) );
 			register_post_type( 'fishapp-competition', apply_filters( 'fishapp_competition_post_type_args', $fishapp_args ) );
@@ -54,7 +54,7 @@ class Fishapp_Types {
 				'show_ui'             => true,
 				'menu_icon'           => FISHAPP_URL . '/assets/images/admin/dashboard-icon.png',
 				'menu_position'       => 20.292892729,
-				'supports' => array('title','editor','thumbnail')
+				'supports' => array('title','author')
 				
 			) );
 			register_post_type( 'fishapp-participants', apply_filters( 'fishapp_participants_post_type_args', $fishapp_args ) );

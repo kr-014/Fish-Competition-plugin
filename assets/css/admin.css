@@ -26,7 +26,30 @@
     vertical-align: middle;
 } 
 .column-action_work a{margin-right:10px;}    
-    
+.gallery_image {
+    display: flex;
+}
+.gallery_image span {
+    margin-right: 20px;
+    margin-top: 20px;
+    position: relative;
+}
+.gallery_image img.true_pre_image {
+    height: 100px;
+    object-fit: cover;
+}
+
+span.del_icon {
+    position: absolute;
+    top: -10px;
+    right: -9px;
+    margin: 0px;
+    background: #000d;
+    color: #fff;
+    padding: 0px 8px 3px 7px;
+    border-radius: 21px;
+    cursor: pointer;
+}
     
     
     
