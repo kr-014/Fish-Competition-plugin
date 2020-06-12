@@ -209,12 +209,51 @@ function fill_fishapp_participants_columns( $column, $post_id ) {
 }
 
 
+function ibenic_add_media_custom_field( $form_fields, $post ) {
+    $field_value_latitude = get_post_meta( $post->ID, 'latitude', true );
+    $field_value_longitude = get_post_meta( $post->ID, 'longitude', true ); 
+    $form_fields['latitude'] = array(
+        'value' => $field_value_latitude ? $field_value_latitude : '',
+        'label' => __( 'latitude ' ),
+        'helps' => __( 'Enter Latitude' ),
+        'input'  => 'text'
+    );
+    $form_fields['longitude'] = array(
+        'value' => $field_value_longitude ? $field_value_longitude : '',
+        'label' => __( 'longitude ' ),
+        'helps' => __( 'Enter Longitude' ),
+        'input'  => 'text'
+    );
+    return $form_fields;
+}
+add_filter( 'attachment_fields_to_edit', 'ibenic_add_media_custom_field', null, 2 );
+
+function ibenic_save_attachment( $attachment_id ) {
+    if ( isset( $_REQUEST['attachments'][ $attachment_id ]['latitude'] ) ) {
+        $latitude_val = $_REQUEST['attachments'][ $attachment_id ]['latitude'];
+        update_post_meta( $attachment_id, 'latitude', $latitude_val );
+    }
+    if ( isset( $_REQUEST['attachments'][ $attachment_id ]['longitude'] ) ) {
+        $longitude_val = $_REQUEST['attachments'][ $attachment_id ]['longitude'];
+        update_post_meta( $attachment_id, 'longitude', $longitude_val );
+    }
+}
+add_action( 'edit_attachment', 'ibenic_save_attachment' );
+
+
+
+
+
+
+
 function wpse28782_remove_menu_items() {
     //if( !current_user_can( 'administrator' ) ):
         remove_menu_page( 'edit.php?post_type=fishapp-participants' );
    // endif;
 }
 add_action( 'admin_menu', 'wpse28782_remove_menu_items' );
+
+
 
 
 add_action( 'wp_ajax_stop_comp', '_ajax_handler_for_stop_funtion' );    // If called from admin panel
@@ -226,3 +265,20 @@ function _ajax_handler_for_stop_funtion() {
     wp_die();
 }
 
+
+
+
+add_action('init', 'modal_wrapper');
+function modal_wrapper()
+{
+    $HTML = '';
+    $HTML .= '<div class="modal-wrapper">';
+    $HTML .= '<div class="modal">';
+    $HTML .= '<span class="close-modal del_icon">X</span>';
+    $HTML .= '<div id="modal-content"></div>';
+    $HTML .= '</div>';
+    $HTML .= '</div>';
+
+    echo $HTML;
+
+}

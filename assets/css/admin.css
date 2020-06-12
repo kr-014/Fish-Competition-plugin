@@ -26,18 +26,22 @@
     vertical-align: middle;
 } 
 .column-action_work a{margin-right:10px;}    
-.gallery_image {
+.gallery_image,.gallery_Videos {
     display: flex;
 }
-.gallery_image span {
+.gallery_image span, .gallery_Videos span {
     margin-right: 20px;
     margin-top: 20px;
     position: relative;
 }
-.gallery_image img.true_pre_image {
+.gallery_image img.true_pre_image,.gallery_Videos img.true_pre_image{
     height: 100px;
-    object-fit: cover;
+    object-fit: cover;    cursor: pointer;
 }
+.gallery_image img.true_pre_image:hover, .gallery_Videos img.true_pre_image:hover {
+    box-shadow: 4px 3px 1px 0px rgba(0,0,0,0.15);
+}
+
 
 span.del_icon {
     position: absolute;
@@ -53,3 +57,74 @@ span.del_icon {
     
     
     
+.video_section { display: flex; }
+.video_section form.approval_setting {    padding: 8px 13px;}
+
+.video_section video { background: #000;}
+.video_section form.approval_setting input, 
+.video_section form.approval_setting select {
+    width: 100%;
+    margin: 8px 0px;
+}
+
+
+@media only screen and (min-width: 768px) {
+  .hide {
+    display: none;
+  }
+  .show {
+    display: block!important;
+  }
+     .modal-wrapper {
+        left: calc((100vw - 600px)/2);
+       
+        min-width: 460px;
+        position: absolute;
+        text-align: left;
+        z-index: 997;
+        top: 20%;
+        
+    }
+
+    .modal {
+        display: none;
+        position: relative;
+        width: 800px;
+        min-height: 300px;
+        padding: 20px 15px;
+        background: #EEEEEE;
+        color: #000000;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,.7);
+        background: #fcfcfc;
+        -webkit-font-smoothing: subpixel-antialiased;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 13px;
+    }
+    .modal .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 15px;
+            cursor: pointer;
+        }
+
+    .modal h1 {
+            font-size: 56px;
+            margin: 35px 0;
+        }
+
+        .modal .entry-content p {
+                font-size: 16px;
+            }
+            .modal .close-modal {
+                position: absolute;
+                top: -10px;
+                right: -9px;
+                cursor: pointer;
+            } 
+    
+}
+// end of media query
+
+@media only screen and (min-width: 1030px) {}

@@ -163,7 +163,9 @@ class Fishapp_Admin_fields {
     	if(!empty($_POST)){
 			if(get_post_type($post_id) == "fishapp-participants"){
 				update_post_meta($post_id,'participant_upload_image',array_filter(explode(",",$_POST['participant_upload_image'])));
+				update_post_meta($post_id,'participant_upload_videos',array_filter(explode(",",$_POST['participant_upload_videos'])));
 				update_post_meta($post_id,'participant_comp_details',$_POST['compi_list']);
+				
 			}
 			if(get_post_type($post_id) == "fishapp-competition"){
 				update_post_meta($post_id,'fish_catching_atrix',$_POST['fish_catching_atrix']);
@@ -188,7 +190,48 @@ class Fishapp_Admin_fields {
 
 	public static function add_metaboxs_for_participants(){
 		add_action( 'add_meta_boxes', array(__CLASS__, 'add_metabox_for_participants_photos' ),10, 5);
+		add_action( 'add_meta_boxes', array(__CLASS__, 'add_metabox_for_participants_videos' ),10, 5);
 		add_action( 'add_meta_boxes', array(__CLASS__, 'add_metabox_for_participants_compi_details' ),10, 5);
+	}
+
+
+	public static function add_metabox_for_participants_videos($post_type, $post) {
+		add_meta_box(
+	        'participants_videos_meta_box', // $id
+	        'Videos', // $title
+	        array(__CLASS__, 'show_participants_videos_meta_box' ), // $callback
+	        'fishapp-participants', // $screen
+	        'normal', // $context
+	        'high' // $priority
+	      );
+	}
+	public static function show_participants_videos_meta_box($post){
+		$meta_key = 'participant_upload_videos';
+		$valuephotos = '';
+		if(!empty(Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_upload_videos'))){
+			$valuephotos = implode(',',Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_upload_videos'));
+		}
+		echo Fishapp_Admin_fields::_videos_uploader_field( $meta_key, $valuephotos );
+	}
+	
+	public function _videos_uploader_field( $name, $value = '') {
+		$image = ' button">Upload Video';
+		$image_size = 'full'; // it would be better to use thumbnail size here (150x150 or so)
+		$display = 'none'; // display state ot the "Remove image" button
+		$imagehtml = '';
+		foreach(explode(",",$value) as $valattach){
+			if( $image_attr_url = wp_get_attachment_url( $valattach) ) {
+				$imagehtml .= '<span data-id="'.$valattach.'"><span class="del_icon" delete-id="'.$valattach.'">x</span>
+					<img view-id="'.$valattach.'" class="true_pre_image" src="' .POPASSETS_URL. 'images/Video-Placeholder.jpg" video-url = "'.$image_attr_url.'"style="max-width:100px;display:block;" />
+				</span>';
+			} 
+		}
+		return '<div>
+			<a href="#" class="upload_video_button' . $image . '</a>
+			<input type="hidden" name="' . $name . '" id="' . $name . '" value="' . esc_attr( $value ) . '" />
+			<a href="#" class="remove_video_button" style="display:inline-block;display:' . $display . '">Remove Videos</a>
+			<div class="gallery_Videos">'.$imagehtml.'</div>
+		</div>';
 	}
 
 	
@@ -247,32 +290,20 @@ class Fishapp_Admin_fields {
 		}
 		echo Fishapp_Admin_fields::_image_uploader_field( $meta_key, $valuephotos );
     }
-		/*
-	* @param string $name Name of option or name of post custom field.
-	* @param string $value Optional Attachment ID
-	* @return string HTML of the Upload Button
-	*/
 	public function _image_uploader_field( $name, $value = '') {
-		
-		
-		//get_post_meta('participant_upload_image',true)
-		
 		$image = ' button">Upload image';
 		$image_size = 'full'; // it would be better to use thumbnail size here (150x150 or so)
 		$display = 'none'; // display state ot the "Remove image" button
 		$imagehtml = '';
 		foreach(explode(",",$value) as $valattach){
 			if( $image_attributes = wp_get_attachment_image_src( $valattach, $image_size ) ) {
-				$imagehtml .= '<span data-id="'.$valattach.'"><span class="del_icon" delete-id="'.$valattach.'">x</span><img class="true_pre_image" src="' .$image_attributes[0]. '" style="max-width:100px;display:block;" /></span>';
+				$imagehtml .= '<span data-id="'.$valattach.'"><span class="del_icon" delete-id="'.$valattach.'">x</span><img view-id="'.$valattach.'" class="true_pre_image" src="' .$image_attributes[0]. '" style="max-width:100px;display:block;" /></span>';
 				// $image = '"><img src="' . $image_attributes[0] . '" style="max-width:95%;display:block;" />';
 				// $display = 'inline-block';
 		
 			} 
 		}
-		
-	
-		return '
-		<div>
+		return '<div>
 			<a href="#" class="upload_image_button' . $image . '</a>
 			<input type="hidden" name="' . $name . '" id="' . $name . '" value="' . esc_attr( $value ) . '" />
 			<a href="#" class="remove_image_button" style="display:inline-block;display:' . $display . '">Remove image</a>
