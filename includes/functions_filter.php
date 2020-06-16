@@ -212,6 +212,28 @@ function fill_fishapp_participants_columns( $column, $post_id ) {
 function ibenic_add_media_custom_field( $form_fields, $post ) {
     $field_value_latitude = get_post_meta( $post->ID, 'latitude', true );
     $field_value_longitude = get_post_meta( $post->ID, 'longitude', true ); 
+    $field_value_approve_status = get_post_meta($post->ID, "approve_status", true);
+
+    $form_approve_html = '<select name="approve_status" class="approve_status">';
+    if($field_value_approve_status === "inreview") {
+        $form_approve_html .= '<option value="inreview" selected>In Review</option>';
+    } else {
+        $form_approve_html .= '<option value="inreview">In Review</option>';
+    }
+    if($field_value_approve_status === "reject") {
+        $form_approve_html .= '<option  value="reject" selected>Reject</option>';
+    } else {
+        $form_approve_html .= '<option value="reject">Reject</option>';
+    }
+
+    if($field_value_approve_status === "approved") {
+        $form_approve_html .= '<option  value="approved" selected>Approved</option>';
+    } else {
+        $form_approve_html .= '<option value="approved">Approved</option>';
+    }
+    $form_approve_html .= '</select>';
+
+
     $form_fields['latitude'] = array(
         'value' => $field_value_latitude ? $field_value_latitude : '',
         'label' => __( 'latitude ' ),
@@ -224,6 +246,15 @@ function ibenic_add_media_custom_field( $form_fields, $post ) {
         'helps' => __( 'Enter Longitude' ),
         'input'  => 'text'
     );
+    $form_fields['approve_status'] = array(
+        'label' => __( 'Approve Status'),
+        'helps' => __( 'Approve Status' ),
+        'input'  => 'html',
+        'html'  => $form_approve_html
+    );
+
+    
+
     return $form_fields;
 }
 add_filter( 'attachment_fields_to_edit', 'ibenic_add_media_custom_field', null, 2 );
@@ -236,6 +267,10 @@ function ibenic_save_attachment( $attachment_id ) {
     if ( isset( $_REQUEST['attachments'][ $attachment_id ]['longitude'] ) ) {
         $longitude_val = $_REQUEST['attachments'][ $attachment_id ]['longitude'];
         update_post_meta( $attachment_id, 'longitude', $longitude_val );
+    }
+    if ( isset( $_REQUEST['approve_status'] ) ) {
+        $approve_status = $_REQUEST['approve_status'];
+        update_post_meta( $attachment_id, 'approve_status', $approve_status );
     }
 }
 add_action( 'edit_attachment', 'ibenic_save_attachment' );
@@ -265,18 +300,50 @@ function _ajax_handler_for_stop_funtion() {
     wp_die();
 }
 
+add_action( 'wp_ajax_video_file_participants_action', 'video_file_participants_action' );    // If called from admin panel
+add_action( 'wp_ajax_nopriv_video_file_participants_action', 'video_file_participants_action' );
+function video_file_participants_action() {
+    $attachment_id = $_POST['vid'];
+
+    if ( isset($_POST['data'][0]['value'] ) ) {
+        $latitude_val = $_POST['data'][0]['value'];
+        update_post_meta( $attachment_id, 'latitude', $latitude_val );
+    }
+    if ( isset($_POST['data'][1]['value'] ) ) {
+        $longitude_val = $_POST['data'][1]['value'];
+        update_post_meta( $attachment_id, 'longitude', $longitude_val );
+    }
+    if ( isset($_POST['data'][2]['value'] ) ) {
+        $approve_status = $_POST['data'][2]['value'];
+        update_post_meta( $attachment_id, 'approve_status', $approve_status );
+    }
+    wp_die();
+}
 
 
 
-add_action('init', 'modal_wrapper');
+
+
+
+add_action('admin_footer', 'modal_wrapper');
 function modal_wrapper()
 {
     $HTML = '';
     $HTML .= '<div class="modal-wrapper">';
-    $HTML .= '<div class="modal">';
-    $HTML .= '<span class="close-modal del_icon">X</span>';
-    $HTML .= '<div id="modal-content"></div>';
-    $HTML .= '</div>';
+        $HTML .= '<div class="modal">';
+            $HTML .= '<span class="close-modal del_icon">X</span>';
+            $HTML .= '<div id="modal-content">';
+                $HTML .= '<div class="video_section" >';
+                $HTML .= '<span class="video_section_load"></span>';
+                $HTML .= '<form name="approval_setting" class="approval_setting" data_attavhvid="">';
+                $HTML .= '<input type="text" name="latitude" class="latitude" placeholder="Latitude"/>';
+                $HTML .= '<input type="text" name="longitude" class="longitude"  placeholder="Longitude"/>';
+                $HTML .= '<select name="approve_status" class="approve_status"><option value="inreview">In Review</option><option value="reject">Reject</option><option value="approved">Approved</option></select>';
+                $HTML .= '<a class="approval_setting_submit">Save</a>';
+                $HTML .= '</form>';
+                $HTML .= '</div>';
+            $HTML .= '</div>';
+        $HTML .= '</div>';
     $HTML .= '</div>';
 
     echo $HTML;

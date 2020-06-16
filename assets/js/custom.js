@@ -43,50 +43,9 @@ jQuery(function($){
        
     
     });
-
-    $('.approval_setting_submit').click(function(){
-        var checked = $(this).is(':checked');
-        var compid = $(this).attr('data-id');
-        var ajax_url = 'http://localhost/finishingapp/wp-admin/admin-ajax.php';
-        console.log(checked);
-        if(checked) {
-            if(confirm('Are you sure you want to Stop this Competition?')){
-            $(this).attr("checked", "checked");    
-                jQuery.ajax({
-                    url: ajax_url,
-                    data: {
-                        action: 'stop_comp',
-                        'comp_id': compid,
-                        'check': 1
-                    },
-                    type: 'POST'
-                },function(response) {
-                    console.log('The server responded: ', response);
-                }); 
-            } else { return false; }   
-                
-            
-        } else {
-            if(confirm('Are you sure you want to resume the Competition?')){
-                $(this).removeAttr('checked');
-                jQuery.ajax({
-                    url: ajax_url,
-                    data: {
-                        action: 'stop_comp',
-                        'comp_id': compid,
-                        'check': 0
-                    },
-                    type: 'POST'
-                },function(response) {
-                    console.log('The server responded: ', response);
-                }); 
-            } else {return false;}
-        }
-        
-        
-       
     
-    });
+
+
     
     
 });
@@ -289,38 +248,56 @@ jQuery(document).ready(function($) {
     var $window = $(window);
   
     function checkWidth() {
-      var windowsize = $window.width();
-      if (windowsize > 767) {
-        // if the window is greater than 767px wide then do below. we don't want the modal to show on mobile devices and instead the link will be followed.
-  
-        $(".gallery_Videos .true_pre_image").click(function(e) {
-            var video_url = $(this).attr('video-url');
-          var modalContent = $("#modal-content");
-          var latlong_aproveform = '<form name="approval_setting" class="approval_setting">';
-            latlong_aproveform += '<input type="text" name="latitude" class="latitude" placeholder="Latitude"/>';
-            latlong_aproveform += '<input type="text" name="longitude" class="longitude"  placeholder="Longitude"/>';
-            latlong_aproveform += '<select name="approve_status" class="approve_status"><option value="inreview">In Review</option><option value="reject">Reject</option><option value="approved">Approved</option></select>';
-            latlong_aproveform += '<span class="approval_setting_submit">Save</span>';
-            latlong_aproveform += '</form>';
-          var videoget = '<div class="video_section" ><video width="60%" height="340" controls> <source src="'+video_url+'" type="video/mp4"> <source src="'+video_url+'" type="video/ogg"> Your browser does not support the video tag. </video>';
-          videoget += latlong_aproveform;
-          videoget += '</div>';
-         // var post_link = $('#modal-content').html(); // get content to show in modal
-          //var post_link = $(this).attr("href"); // this can be used in WordPress and it will pull the content of the page in the href
-          
-          e.preventDefault(); // prevent link from being followed
-          
-          $('.modal').addClass('show', 500, "easeOutSine"); // show class to display the previously hidden modal
-          modalContent.html("loading..."); // display loading animation or in this case static content
-          modalContent.html(videoget); // for dynamic content, change this to use the load() function instead of html() -- like this: modalContent.load(post_link + ' #modal-ready')
-          $("html, body").animate({ // if you're below the fold this will animate and scroll to the modal
-            scrollTop: 0
-          }, "slow");
-          return false;
-        });
-      }
-    };
+        var windowsize = $window.width();
+        if (windowsize > 767) {
+          // if the window is greater than 767px wide then do below. we don't want the modal to show on mobile devices and instead the link will be followed.
+          $(".gallery_Videos .true_pre_image").click(function(e) {
+              var video_url = $(this).attr('video-url');
+            var modalContent = $("#modal-content .video_section .video_section_load");
+            var videoget = '<video width="60%" height="340" controls> <source src="'+video_url+'" type="video/mp4"> <source src="'+video_url+'" type="video/ogg"> Your browser does not support the video tag. </video>';
+            var vidid = $(this).parent('span').attr('data-id');
+            $('form.approval_setting').attr('data_attavhvid',vidid);
+            $('.latitude').val($(this).attr('lat'));
+            $('.longitude').val($(this).attr('long'));
+            $('.approve_status').val($(this).attr('status'));
+            e.preventDefault(); // prevent link from being followed
+            $('.modal').addClass('show', 500, "easeOutSine"); // show class to display the previously hidden modal
+            //modalContent.html("loading..."); // display loading animation or in this case static content
+            modalContent.html(videoget); // for dynamic content, change this to use the load() function instead of html() -- like this: modalContent.load(post_link + ' #modal-ready')
+            $("html, body").animate({ // if you're below the fold this will animate and scroll to the modal
+              scrollTop: 0
+            }, "slow");
+            return false;
+          });
+        }
+      };
   
     checkWidth(); // excute function to check width on load
     $(window).resize(checkWidth); // execute function to check width on resize
+
+
+    $(".approval_setting .approval_setting_submit").click(function(e) {
+        e.preventDefault();
+        var vidval = $('form.approval_setting').attr('data_attavhvid');
+        var ajax_url = 'http://localhost/finishingapp/wp-admin/admin-ajax.php';
+        jQuery.ajax({
+            url: ajaxurl,
+            data: {
+                action: 'video_file_participants_action',
+                'vid' :$('form.approval_setting').attr('data_attavhvid'),
+                'data': $('form.approval_setting').serializeArray()
+            },
+            type: 'POST'
+        },function(response) {
+            
+                $('.modal').removeClass('show');
+              
+        }); 
+        $('img[view-id="'+vidval+'"]').attr('lat',$('form.approval_setting .latitude').val());
+        $('img[view-id="'+vidval+'"]').attr('long',$('form.approval_setting .longitude').val());
+        $('img[view-id="'+vidval+'"]').attr('status',$('form.approval_setting .approve_status').val());
+
+        $('.modal').removeClass('show');
+        
+    });
   });

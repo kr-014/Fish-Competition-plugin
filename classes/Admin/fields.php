@@ -50,8 +50,8 @@ class Fishapp_Admin_fields {
 		$fish_catching_atrix_val = Fishapp_Admin_fields::get_fishapp_competition_meta_value('fish_catching_atrix');
 
 		$fish_catching_atrix_arr = array('label'=>'Fish biology','type'=>'textarea','name'=>'fish_catching_atrix[fish_biology]','id'=>'fish_biology','class'=>'fish_biology',
-		'rows'=>"4", 'cols'=>"50", 'getval' =>$fish_catching_atrix_val['fish_biology'] );
-		$Length = array('label'=>'Length','type'=>'number','name'=>'fish_catching_atrix[length]','id'=>'length','class'=>'length', 'getval' =>$fish_catching_atrix_val['length']);
+		'rows'=>"4", 'cols'=>"50", 'getval' =>isset($fish_catching_atrix_val['fish_biology'])?$fish_catching_atrix_val['fish_biology']:'' );
+		$Length = array('label'=>'Length','type'=>'number','name'=>'fish_catching_atrix[length]','id'=>'length','class'=>'length', 'getval' =>isset($fish_catching_atrix_val['length']));
 		echo Fishapp_Admin_instance::input_get_display($fish_catching_atrix_arr);
 		echo Fishapp_Admin_instance::input_get_display($Length);
     }
@@ -69,13 +69,24 @@ class Fishapp_Admin_fields {
 	public static function show_Bonus_points_meta_box($post){
 		
 		$Bonus_points = Fishapp_Admin_fields::get_fishapp_competition_meta_value('Bonus_points');
-		$fish_length_matrix = array('label'=>'Fish length Matrix',
-		'type'=>'number',
+		$fish_length_matrix = array('label'=>'Points for every inches',
+		'type'=>'text',
 		'name'=>'Bonus_points[fish_length_matrix]',
 		'id'=>'fish_length_matrix',
 		'class'=>'fish_length_matrix',
-		'getval' =>$Bonus_points['fish_length_matrix']);
+		'getval' =>isset($Bonus_points['fish_length_matrix'])?$Bonus_points['fish_length_matrix']:1.5);
+
+		$fish_releases_point = array('label'=>'Releases fish Point',
+		'type'=>'text',
+		'name'=>'Bonus_points[fish_releases_point]',
+		'id'=>'fish_releases_point',
+		'class'=>'fish_releases_point',
+		'getval' =>isset($Bonus_points['fish_releases_point'])?$Bonus_points['fish_releases_point']:2.5);
+
+
+
 		echo Fishapp_Admin_instance::input_get_display($fish_length_matrix);
+		echo Fishapp_Admin_instance::input_get_display($fish_releases_point);
     }
 
 
@@ -94,15 +105,15 @@ class Fishapp_Admin_fields {
 		$competition_settings = Fishapp_Admin_fields::get_fishapp_competition_meta_value('competition_settings');
 		
         $photo_visibility = array('label'=>'Photo Visibility','type'=>'radio','name'=>'competition_settings[photo_visibility]','id'=>'photo_visibility','class'=>'photo_visibility',
-									'getval' =>$competition_settings['photo_visibility']);
+									'getval' =>isset($competition_settings['photo_visibility']));
 		$photo_visibility ['options'] = array('public'=>'Public','competition'=>'Competition');
 
 		$video_upload_allowed = array('label'=>'Video upload allowed?','type'=>'checkbox','name'=>'competition_settings[video_upload_allowed]','id'=>'video_upload_allowed','class'=>'video_upload_allowed',
-		'getval' =>$competition_settings['video_upload_allowed']);
+		'getval' =>isset($competition_settings['video_upload_allowed']));
 		$top_winners = array('label'=>'Top winners','type'=>'number','name'=>'competition_settings[top_winners]','id'=>'top_winners','class'=>'top_winners',
-		'getval' =>$competition_settings['top_winners']);
+		'getval' =>isset($competition_settings['top_winners']));
 		$Price_information = array('label'=>'Price information','type'=>'number','name'=>'competition_settings[price_information]','id'=>'price_information','class'=>'price_information',
-		'getval' =>$competition_settings['price_information']);
+		'getval' =>isset($competition_settings['price_information']));
 
 		echo Fishapp_Admin_instance::input_get_display($photo_visibility);
 		echo Fishapp_Admin_instance::input_get_display($video_upload_allowed);
@@ -137,6 +148,7 @@ class Fishapp_Admin_fields {
 		'getval' =>$com_othere_set['compi_start_date']);
 		$compi_end_date = array('label'=>'End Date','type'=>'input','name'=>'competition_othere_settings[compi_end_date]','id'=>'compi_end_date','class'=>'compi_end_date date_field',
 		'getval' =>$com_othere_set['compi_end_date']);
+
 		// $option_compi_end_date = array('label'=>'Option to start and end the competition','type'=>'input','name'=>'competition_othere_settings[option_compi_end_date]','id'=>'option_compi_end_date','class'=>'option_compi_end_date',
 		// 'getval' =>$com_othere_set['option_compi_end_date']);
 		echo Fishapp_Admin_instance::input_get_display($daily_catching_limit);
@@ -192,8 +204,53 @@ class Fishapp_Admin_fields {
 		add_action( 'add_meta_boxes', array(__CLASS__, 'add_metabox_for_participants_photos' ),10, 5);
 		add_action( 'add_meta_boxes', array(__CLASS__, 'add_metabox_for_participants_videos' ),10, 5);
 		add_action( 'add_meta_boxes', array(__CLASS__, 'add_metabox_for_participants_compi_details' ),10, 5);
-	}
+		add_action( 'add_meta_boxes', array(__CLASS__, 'add_metabox_for_participants_map_details' ),10, 5);
+	}	
 
+	
+	public static function add_metabox_for_participants_map_details($post_type, $post) {
+		add_meta_box(
+	        'participants_map_meta_box', // $id
+	        'Map', // $title
+	        array(__CLASS__, 'show_participants_map_meta_box' ), // $callback
+	        'fishapp-participants', // $screen
+	        'normal', // $context
+	        'high' // $priority
+	      );
+	}
+	public static function show_participants_map_meta_box($post){
+		echo '<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3sRM1whnKz49XXKlraL6uvT7mZHzt4O8"></script>';
+		echo '<div id="map"></div>';
+		echo '<script>
+		var center = {lat: 34.052235, lng: -118.243683};
+					var locations = [
+						["Philz Coffee<br>\ 801 S Hope St A, Los Angeles, CA 90017<br>",   34.046438, -118.259653],
+						["Philz Coffee<br>\ 525 Santa Monica Blvd, Santa Monica, CA 90401<br>", 34.017951, -118.493567],
+						["Philz Coffee<br>\ 146 South Lake Avenue #106, At Shoppers Lane, Pasadena, CA 91101<br>", 34.143073, -118.132040],
+						["Philz Coffee<br>\ 21016 Pacific Coast Hwy, Huntington Beach, CA 92648<br>", 33.655199, -117.998640],
+						["Philz Coffee<br>\ 252 S Brand Blvd, Glendale, CA 91204<br>", 34.142823, -118.254569]
+					];
+					var map = new google.maps.Map(document.getElementById("map"), {
+						zoom: 9,
+						center: center
+					});
+					var infowindow =  new google.maps.InfoWindow({});
+					var marker, count;
+					for (count = 0; count < locations.length; count++) {
+						marker = new google.maps.Marker({
+						position: new google.maps.LatLng(locations[count][1], locations[count][2]),
+						map: map,
+						title: locations[count][0]
+						});
+					google.maps.event.addListener(marker, "click", (function (marker, count) {
+						return function () {
+							infowindow.setContent(locations[count][0]);
+							infowindow.open(map, marker);
+						}
+						})(marker, count));
+					}
+		</script>';
+	}
 
 	public static function add_metabox_for_participants_videos($post_type, $post) {
 		add_meta_box(
@@ -221,8 +278,20 @@ class Fishapp_Admin_fields {
 		$imagehtml = '';
 		foreach(explode(",",$value) as $valattach){
 			if( $image_attr_url = wp_get_attachment_url( $valattach) ) {
-				$imagehtml .= '<span data-id="'.$valattach.'"><span class="del_icon" delete-id="'.$valattach.'">x</span>
-					<img view-id="'.$valattach.'" class="true_pre_image" src="' .POPASSETS_URL. 'images/Video-Placeholder.jpg" video-url = "'.$image_attr_url.'"style="max-width:100px;display:block;" />
+
+				$lat= $long= $status="";
+				if(get_post_meta( $valattach, 'latitude', true )){
+					$lat = get_post_meta( $valattach, 'latitude', true );
+				}
+				if(get_post_meta( $valattach, 'longitude', true )){
+					$long = get_post_meta( $valattach, 'longitude', true );
+				}
+				if(get_post_meta( $valattach, 'approve_status', true )){
+					$status = get_post_meta( $valattach, 'approve_status', true );
+				}
+
+				$imagehtml .= '<span data-id="'.$valattach.'"  statusset="'.$status.'"><span class="del_icon" delete-id="'.$valattach.'">x</span>
+					<img view-id="'.$valattach.'" class="true_pre_image" src="' .POPASSETS_URL. 'images/Video-Placeholder.jpg" video-url = "'.$image_attr_url.'"style="max-width:100px;display:block;"  lat="'.$lat.'" long="'.$long.'" status="'.$status.'"/>
 				</span>';
 			} 
 		}
