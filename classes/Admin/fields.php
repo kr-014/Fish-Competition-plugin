@@ -48,10 +48,12 @@ class Fishapp_Admin_fields {
 	}
 	public static function show_fish_catching_matrix_meta_box($post){
 		$fish_catching_atrix_val = Fishapp_Admin_fields::get_fishapp_competition_meta_value('fish_catching_atrix');
+		print_r($fish_catching_atrix_val['length']);
 
 		$fish_catching_atrix_arr = array('label'=>'Fish biology','type'=>'textarea','name'=>'fish_catching_atrix[fish_biology]','id'=>'fish_biology','class'=>'fish_biology',
 		'rows'=>"4", 'cols'=>"50", 'getval' =>isset($fish_catching_atrix_val['fish_biology'])?$fish_catching_atrix_val['fish_biology']:'' );
-		$Length = array('label'=>'Length','type'=>'number','name'=>'fish_catching_atrix[length]','id'=>'length','class'=>'length', 'getval' =>isset($fish_catching_atrix_val['length']));
+		
+		$Length = array('label'=>'Length','type'=>'number','name'=>'fish_catching_atrix[length]','id'=>'length','class'=>'length', 'getval' =>isset($fish_catching_atrix_val['length'])?$fish_catching_atrix_val['length']:'');
 		echo Fishapp_Admin_instance::input_get_display($fish_catching_atrix_arr);
 		echo Fishapp_Admin_instance::input_get_display($Length);
     }
@@ -74,7 +76,7 @@ class Fishapp_Admin_fields {
 		'name'=>'Bonus_points[fish_length_matrix]',
 		'id'=>'fish_length_matrix',
 		'class'=>'fish_length_matrix',
-		'getval' =>isset($Bonus_points['fish_length_matrix'])?$Bonus_points['fish_length_matrix']:1.5);
+		'getval' =>isset($Bonus_points['fish_length_matrix'])?$Bonus_points['fish_length_matrix']:.5);
 
 		$fish_releases_point = array('label'=>'Releases fish Point',
 		'type'=>'text',
@@ -105,15 +107,16 @@ class Fishapp_Admin_fields {
 		$competition_settings = Fishapp_Admin_fields::get_fishapp_competition_meta_value('competition_settings');
 		
         $photo_visibility = array('label'=>'Photo Visibility','type'=>'radio','name'=>'competition_settings[photo_visibility]','id'=>'photo_visibility','class'=>'photo_visibility',
-									'getval' =>isset($competition_settings['photo_visibility']));
+									'getval' =>isset($competition_settings['photo_visibility'])?$competition_settings['photo_visibility']:'');
 		$photo_visibility ['options'] = array('public'=>'Public','competition'=>'Competition');
 
 		$video_upload_allowed = array('label'=>'Video upload allowed?','type'=>'checkbox','name'=>'competition_settings[video_upload_allowed]','id'=>'video_upload_allowed','class'=>'video_upload_allowed',
-		'getval' =>isset($competition_settings['video_upload_allowed']));
+		'getval' =>isset($competition_settings['video_upload_allowed'])?$competition_settings['video_upload_allowed']:'');
+
 		$top_winners = array('label'=>'Top winners','type'=>'number','name'=>'competition_settings[top_winners]','id'=>'top_winners','class'=>'top_winners',
-		'getval' =>isset($competition_settings['top_winners']));
+		'getval' =>isset($competition_settings['top_winners'])?$competition_settings['top_winners']:'');
 		$Price_information = array('label'=>'Price information','type'=>'number','name'=>'competition_settings[price_information]','id'=>'price_information','class'=>'price_information',
-		'getval' =>isset($competition_settings['price_information']));
+		'getval' =>isset($competition_settings['price_information'])?$competition_settings['price_information']:'');
 
 		echo Fishapp_Admin_instance::input_get_display($photo_visibility);
 		echo Fishapp_Admin_instance::input_get_display($video_upload_allowed);
@@ -178,8 +181,11 @@ class Fishapp_Admin_fields {
 				update_post_meta($post_id,'participant_upload_videos',array_filter(explode(",",$_POST['participant_upload_videos'])));
 				update_post_meta($post_id,'participant_comp_details',$_POST['compi_list']);
 				
+				update_post_meta($post_id,'participant_Fish_release_done',$_POST['Fish_release_done']);
+				update_post_meta($post_id,'participant_Fish_lenght_check',$_POST['Fish_lenght_check']);
 			}
 			if(get_post_type($post_id) == "fishapp-competition"){
+				//echo '<pre>'; print_r($_POST); echo '</pre>'; die;
 				update_post_meta($post_id,'fish_catching_atrix',$_POST['fish_catching_atrix']);
 				update_post_meta($post_id,'Bonus_points',$_POST['Bonus_points']);
 				update_post_meta($post_id,'competition_settings',$_POST['competition_settings']);
@@ -219,19 +225,31 @@ class Fishapp_Admin_fields {
 	      );
 	}
 	public static function show_participants_map_meta_box($post){
+		
+		$get_allimg = get_post_meta($post->ID, 'participant_upload_image',true);
+		$get_allvid = get_post_meta($post->ID, 'participant_upload_videos',true);
+		$getarrAT = array_merge($get_allimg,$get_allvid);
 		echo '<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3sRM1whnKz49XXKlraL6uvT7mZHzt4O8"></script>';
 		echo '<div id="map"></div>';
 		echo '<script>
-		var center = {lat: 34.052235, lng: -118.243683};
-					var locations = [
-						["Philz Coffee<br>\ 801 S Hope St A, Los Angeles, CA 90017<br>",   34.046438, -118.259653],
-						["Philz Coffee<br>\ 525 Santa Monica Blvd, Santa Monica, CA 90401<br>", 34.017951, -118.493567],
-						["Philz Coffee<br>\ 146 South Lake Avenue #106, At Shoppers Lane, Pasadena, CA 91101<br>", 34.143073, -118.132040],
-						["Philz Coffee<br>\ 21016 Pacific Coast Hwy, Huntington Beach, CA 92648<br>", 33.655199, -117.998640],
-						["Philz Coffee<br>\ 252 S Brand Blvd, Glendale, CA 91204<br>", 34.142823, -118.254569]
-					];
+					var center = {lat: '.get_post_meta($getarrAT[0],'latitude',true).', lng:  '.get_post_meta($getarrAT[0],'longitude',true).'};
+					var locations = [';
+					foreach($getarrAT as $valatt){
+						if(get_post_meta($valatt,'latitude',true)) {
+							$image_attributes = wp_get_attachment_url( $valatt);
+							if (strpos(get_post_mime_type($valatt), 'video') !== false) {
+								$vid = "<video width='60%' height='340' controls> <source src='".$image_attributes."' type='".get_post_mime_type($valatt)."'> Your browser does not support the video tag. </video>";
+								echo '["'.$vid.'<br>",   '.get_post_meta($valatt,'latitude',true).', '.get_post_meta($valatt,'longitude',true).'],';
+							} else {
+								$imgs = "<img src='".$image_attributes."' />";
+								echo '["'.$imgs.'<br>",   '.get_post_meta($valatt,'latitude',true).', '.get_post_meta($valatt,'longitude',true).'],';
+							}
+							
+						}
+					}
+					echo ' ];
 					var map = new google.maps.Map(document.getElementById("map"), {
-						zoom: 9,
+						zoom: 16,
 						center: center
 					});
 					var infowindow =  new google.maps.InfoWindow({});
@@ -321,9 +339,15 @@ class Fishapp_Admin_fields {
 			'post_type'   => 'fishapp-competition'
 		  );
 		  $compi_lists = get_posts( $argscompi_list );
-		  $select_val = '';
+		  $select_val = $releasecheck = $lenghtchk= '';
 		  if(!empty(Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_comp_details'))){
 			$select_val = Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_comp_details');
+		  }
+		  if(!empty(Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_Fish_lenght_check'))){
+			$lenghtchk = Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_Fish_lenght_check');
+		  }
+		  if(!empty(Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_Fish_release_done'))){
+			$releasecheck = "checked";
 		  }
 		  
 		echo '<select class="compi_list" name="compi_list">';
@@ -333,12 +357,17 @@ class Fishapp_Admin_fields {
 				if($select_val == $listval->ID) {
 					$selecttext = 'selected';
 				}
-
-					echo '<option value="'.$listval->ID.'" '.$selecttext.'>'.$listval->post_title.'</option>';
-				
-				
+				echo '<option value="'.$listval->ID.'" '.$selecttext.'>'.$listval->post_title.'</option>';
 			}
 		echo '</select>';
+		echo '<div>';
+			echo '<label>Fish lenght</label>';
+			echo '<input type ="text" class="Fish_lenght_check" name="Fish_lenght_check" value="'.$lenghtchk.'"/>';
+		echo '</div>';
+		echo '<div>';
+			echo '<input type ="checkbox" class="Fish_release_done" name="Fish_release_done" '.$releasecheck.'/>';
+			echo '<span>Done Release Fish</span>';
+		echo '</div>';
 	}
 	
 	public static function add_metabox_for_participants_photos($post_type, $post) {

@@ -22,6 +22,7 @@ class Fishapp_Admin_Pages {
 	 */
 	public static function init() {
 		//add_action( 'admin_menu', array( __CLASS__, 'register_pages' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'fish_admin_draw_winner' ) );
 		//add_action( 'admin_head',  array( __CLASS__, 'reorder_admin_submenu' ) );
 	}
 
@@ -42,32 +43,32 @@ class Fishapp_Admin_Pages {
 	 */
 	public static function register_pages() {
 
-		$admin_pages = apply_filters( 'pum_admin_pages', array(
-			'subscribers' => array(
-				'page_title'  => __( 'Subscribers', 'popup-pro' ),
-				'capability'  => 'manage_options',
-				'callback'    => array( 'popuppro_Admin_Subscribers', 'page' ),
-			),
-			'settings'   => array(
-				'page_title'  => __( 'Settings', 'popup-pro' ),
-				'capability'  => 'manage_options',
-				'callback'    => array( 'popuppro_Admin_Settings', 'page' ),
-			),
-			'extensions' => array(
-				'page_title'  => __( 'Extend', 'popup-pro' ),
-				'capability'  => 'edit_posts',
-				'callback'    => array( 'popuppro_Admin_Extend', 'page' ),
-			),
-			'support'    => array(
-				'page_title'  => __( 'Help & Support', 'popup-pro' ),
-				'capability'  => 'edit_posts',
-				'callback'    => array( 'popuppro_Admin_Support', 'page' ),
-			),
-			'tools'      => array(
-				'page_title'  => __( 'Tools', 'popup-pro' ),
-				'capability'  => 'manage_options',
-				'callback'    => array( 'popuppro_Admin_Tools', 'page' ),
-			),
+		$admin_pages = apply_filters( 'fish_admin_pages', array(
+			// 'subscribers' => array(
+			// 	'page_title'  => __( 'Draw The winner', 'fish-page' ),
+			// 	'capability'  => 'manage_options',
+			// 	'callback'    => array( 'nn', 'page' ),
+			// ),
+			// 'settings'   => array(
+			// 	'page_title'  => __( 'Settings', 'popup-pro' ),
+			// 	'capability'  => 'manage_options',
+			// 	'callback'    => array( 'popuppro_Admin_Settings', 'page' ),
+			// ),
+			// 'extensions' => array(
+			// 	'page_title'  => __( 'Extend', 'popup-pro' ),
+			// 	'capability'  => 'edit_posts',
+			// 	'callback'    => array( 'popuppro_Admin_Extend', 'page' ),
+			// ),
+			// 'support'    => array(
+			// 	'page_title'  => __( 'Help & Support', 'popup-pro' ),
+			// 	'capability'  => 'edit_posts',
+			// 	'callback'    => array( 'popuppro_Admin_Support', 'page' ),
+			// ),
+			// 'tools'      => array(
+			// 	'page_title'  => __( 'Tools', 'popup-pro' ),
+			// 	'capability'  => 'manage_options',
+			// 	'callback'    => array( 'popuppro_Admin_Tools', 'page' ),
+			// ),
 		) );
 
 		foreach ( $admin_pages as $key => $page ) {
@@ -101,6 +102,34 @@ class Fishapp_Admin_Pages {
 		// Add shortcut to theme editor from Appearance menu.
 		add_theme_page( __( 'Popup Themes', 'popup-maker' ), __( 'Popup Themes', 'popup-maker' ), 'edit_posts', 'edit.php?post_type=popup_theme' );
 	}
+
+	public static function fish_admin_draw_winner() {
+		$mypage = add_submenu_page( 
+			null, 
+			'Draw The winner', 
+			'Draw The winner', 
+			'manage_options', 
+			'drawer', 
+			array( __CLASS__, 'fish_admin_draw_winner_page' )
+		);
+		$mypage = add_submenu_page( 
+			'edit.php?post_type=fishapp-competition', 
+			'Setting', 
+			'Setting', 
+			'manage_options', 
+			'setting', 
+			array( __CLASS__, 'fish_admin_setting_page' )
+		);
+		
+	}
+
+	public static function fish_admin_draw_winner_page() {
+		include FISHAPP_DIR.'/classes/Admin/pages/drawer.php';
+	}
+	public static function fish_admin_setting_page() {
+		include FISHAPP_DIR.'/classes/Admin/pages/setting.php';
+	}
+	
 
 
 	/**

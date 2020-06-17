@@ -139,6 +139,7 @@ function fill_fishapp_competition_columns( $column, $post_id ) {
                 break;
         case 'participants' :
             echo '<a href="'.site_url().'/wp-admin/edit.php?post_type=fishapp-participants&comp='.$post_id.'">View</a>';
+            echo '<a href="'.site_url().'/wp-admin/edit.php?page=drawer&comp='.$post_id.'">Draw</a>'; 
                 break; 
         case 'stop_status' :
             $checks = '';
