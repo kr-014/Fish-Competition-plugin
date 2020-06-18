@@ -1,6 +1,6 @@
 #postbox-container-2 textarea{width: 100%;}
 #postbox-container-2 label{margin-bottom: 10px!important;font-weight: 500;display: inline-block;}
-#postbox-container-2 input[type=checkbox]+label, #postbox-container-2 input[type=radio]+label{display: initial!important;}
+#postbox-container-2 input[type=checkbox]+label, #postbox-container-2 input[type=radio]+label{display: initial!important; vertical-align: baseline;}
 .options_val .Visibility_option{width: 49%;
     float: left;
     background: #f7f7f7;
@@ -8,11 +8,11 @@
 .margin_btm{margin-bottom: 20px;}
 .photo_visibility-wrap{float: left;width: 100%; clear: both;}
 #competition_other_settings_meta_box .compi_start_date-wrap,#competition_other_settings_meta_box .compi_end_date-wrap{width: 50%; float: left;}
-.setting_main_head {margin-bottom: 15px;display: inline-block;font-size: 14px;}
+.setting_main_head {margin-bottom: 15px;display: inline-block;font-size: 14px;width: 100%;}
 .win_set{background: #f7f7f7;
     padding: 0px 0px 11px 5px;}
 .com_date {background: #f7f7f7;
-    padding: 0px 0px 11px 5px; float: left;width: 100%; clear: both;margin-bottom: 20px;}  
+    padding: 0px 0px 11px 5px;width: 100%; clear: both;margin-bottom: 20px;}  
 .custom_filter_new{width: 460px;
     float: left;}
 .filed_search{float: left;
@@ -25,7 +25,7 @@
     border-radius: 6px;
     vertical-align: middle;
 } 
-.column-action_work a{margin-right:10px;}    
+.column-action_work a,.column-participants a{margin-right:10px;}    
 .gallery_image,.gallery_Videos {
     display: flex;
 }
@@ -55,8 +55,62 @@ span.del_icon {
     cursor: pointer;
 }
     
-    
-    
+ .fish_length_matrix-wrap,.top_winners-wrap,.daily_catching_limit-wrap,.compi_start_date {width: 50%;
+    float: left;}   
+  #participants_compi_details .Participant_list  {margin-top: 20px;}
+  .header_drawer_part .compi_header_part{background: #fff;
+    display: flex;
+    padding: 15px;}
+.header_drawer_part .compi_header_part .compi_header_part_left{width: 45%;
+    border-right: 1px solid #e7e2e2;
+    padding-right: 15px;}
+.header_drawer_part .compi_header_part .compi_header_part_right{padding-left: 15px;}
+.fishapp-participants_page_drawer #wpcontent{padding-right: 20px;}
+.compi_leaderboard_table{width: 70%;border-spacing: 0px!important;margin:20px auto;}
+.compi_leaderboard_table tbody tr  td.rank span{background: #fff;
+    color: #000;
+    border-radius: 50%;padding: 5px 10px;}
+.compi_leaderboard_table thead tr{background: #000;
+    color: #fff;}
+.compi_leaderboard_table thead th{text-align: left;width: 32%;}    
+.compi_leaderboard_table tbody tr td{vertical-align: middle;width: 32%;text-transform: capitalize;}
+.compi_leaderboard_table tbody tr:nth-child(1){background: #f2c306;color: #fff;}
+.compi_leaderboard_table tbody tr:nth-child(3){background: #8a4fe4;color: #fff;}
+.compi_leaderboard_table tbody tr:nth-child(2){background:#2097ff;color: #fff;}
+.compi_leaderboard_table tbody  tr,.compi_leaderboard_table thead  tr{
+    float: left;width: 100%;margin-bottom: 5px;padding: 9px 0px;border:1px solid #e2dfdf; border-radius: 7px;box-shadow: 0 2px 2px 0 rgba(0,0,0,0.15);}
+.compi_leaderboard_table tbody tr td img{width: 25px;
+    border-radius: 6px;
+    border: 1px solid #fff;
+    vertical-align: middle;
+    margin-right: 15px;}
+.compi_leaderboard_table tr .rank{width: 7%;padding-left: 11px;} 
+/*.compi_leaderboard_table tr .participant{min-width: 260px;} 
+.compi_leaderboard_table tr .competition{min-width: 160px;} 
+.compi_leaderboard_table tr .point{min-width: 125px;} 
+.compi_leaderboard_table tr .action{min-width: 130px;} */   
+.header_drawer_part h4{    border: 1px solid #ccc;
+    padding: 10px;}
+
+.compi_header_part ul li{list-style: decimal;
+    margin-left: 10px;
+}
+
+.compi_leaderboard_table tbody  tr:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)){background: #fff;}
+.compi_leaderboard_table tbody  tr:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)) td.rank span{background: #000;
+    color: #fff;}
+.compi_leaderboard_table tbody td.action a{background: #000;color: #fff;padding: 3px 5px;text-decoration: none; border-radius: 6px; }    
+.compi_leaderboard_table tbody td.action a.view_activity{margin-right: 5px;}
+.header_drawer_part .status{float: right;text-transform: capitalize; padding: 10px 5px;border-radius: 5px;
+    margin-top: -10px;font-weight: bold;}
+.header_drawer_part .status.not_started{color: #fff;background: #1dca1d;}
+.header_drawer_part .status.Stop{color: #fff;background: red;}
+.header_drawer_part .status.running{color: #000;
+    background: #dada2f;}
+.header_drawer_part .status.completed{color: #fff;background: red;}          
+
+
+
 .video_section { display: flex; }
 .video_section form.approval_setting {    padding: 8px 13px;}
 

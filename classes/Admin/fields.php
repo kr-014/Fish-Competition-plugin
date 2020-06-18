@@ -48,8 +48,6 @@ class Fishapp_Admin_fields {
 	}
 	public static function show_fish_catching_matrix_meta_box($post){
 		$fish_catching_atrix_val = Fishapp_Admin_fields::get_fishapp_competition_meta_value('fish_catching_atrix');
-		print_r($fish_catching_atrix_val['length']);
-
 		$fish_catching_atrix_arr = array('label'=>'Fish biology','type'=>'textarea','name'=>'fish_catching_atrix[fish_biology]','id'=>'fish_biology','class'=>'fish_biology',
 		'rows'=>"4", 'cols'=>"50", 'getval' =>isset($fish_catching_atrix_val['fish_biology'])?$fish_catching_atrix_val['fish_biology']:'' );
 		
@@ -172,29 +170,7 @@ class Fishapp_Admin_fields {
 	    do_meta_boxes( get_current_screen(), 'advanced', $post );
 	    unset( $wp_meta_boxes[get_post_type( $post )]['advanced'] );
 	}
-    //saving meta info (used for both traditional and quick-edit saves)
-    public static function save_fishapp_competition($post_id){
-		
-    	if(!empty($_POST)){
-			if(get_post_type($post_id) == "fishapp-participants"){
-				update_post_meta($post_id,'participant_upload_image',array_filter(explode(",",$_POST['participant_upload_image'])));
-				update_post_meta($post_id,'participant_upload_videos',array_filter(explode(",",$_POST['participant_upload_videos'])));
-				update_post_meta($post_id,'participant_comp_details',$_POST['compi_list']);
-				
-				update_post_meta($post_id,'participant_Fish_release_done',$_POST['Fish_release_done']);
-				update_post_meta($post_id,'participant_Fish_lenght_check',$_POST['Fish_lenght_check']);
-			}
-			if(get_post_type($post_id) == "fishapp-competition"){
-				//echo '<pre>'; print_r($_POST); echo '</pre>'; die;
-				update_post_meta($post_id,'fish_catching_atrix',$_POST['fish_catching_atrix']);
-				update_post_meta($post_id,'Bonus_points',$_POST['Bonus_points']);
-				update_post_meta($post_id,'competition_settings',$_POST['competition_settings']);
-				update_post_meta($post_id,'competition_othere_settings',$_POST['competition_othere_settings']);
-				update_post_meta($post_id,'competition_start_date',strtotime($_POST['competition_othere_settings']['compi_start_date']));
-				update_post_meta($post_id,'competition_end_date',strtotime($_POST['competition_othere_settings']['compi_end_date']));
-			}
-    	}
-	}
+    
 	
 	public static function get_fishapp_competition_meta_value($key){
 		global $post;
@@ -215,19 +191,26 @@ class Fishapp_Admin_fields {
 
 	
 	public static function add_metabox_for_participants_map_details($post_type, $post) {
-		add_meta_box(
+		if(!empty(get_post_meta($post->ID, 'participant_upload_image',true))){
+			add_meta_box(
 	        'participants_map_meta_box', // $id
 	        'Map', // $title
 	        array(__CLASS__, 'show_participants_map_meta_box' ), // $callback
 	        'fishapp-participants', // $screen
 	        'normal', // $context
 	        'high' // $priority
-	      );
+		  );
+		}
 	}
 	public static function show_participants_map_meta_box($post){
+		$get_allimg = $get_allvid= array();
+		if(!empty(get_post_meta($post->ID, 'participant_upload_image',true))){
+			$get_allimg = get_post_meta($post->ID, 'participant_upload_image',true);
+		}
+		if(!empty(get_post_meta($post->ID, 'participant_upload_videos',true))){
+			$get_allvid = get_post_meta($post->ID, 'participant_upload_videos',true);
+		}
 		
-		$get_allimg = get_post_meta($post->ID, 'participant_upload_image',true);
-		$get_allvid = get_post_meta($post->ID, 'participant_upload_videos',true);
 		$getarrAT = array_merge($get_allimg,$get_allvid);
 		echo '<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3sRM1whnKz49XXKlraL6uvT7mZHzt4O8"></script>';
 		echo '<div id="map"></div>';
@@ -339,9 +322,20 @@ class Fishapp_Admin_fields {
 			'post_type'   => 'fishapp-competition'
 		  );
 		  $compi_lists = get_posts( $argscompi_list );
-		  $select_val = $releasecheck = $lenghtchk= '';
+		  $argusrs = array(
+			'role'    => 'Subscriber',
+			'orderby' => 'user_nicename',
+			'order'   => 'ASC'
+		);
+		$participant_lists = get_users( $argusrs );
+
+
+		  $select_val = $releasecheck = $lenghtchk= $select_parti = '';
 		  if(!empty(Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_comp_details'))){
 			$select_val = Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_comp_details');
+		  }
+		  if(!empty(Fishapp_Admin_fields::get_fishapp_competition_meta_value('Participant_list'))){
+			$select_parti = Fishapp_Admin_fields::get_fishapp_competition_meta_value('Participant_list');
 		  }
 		  if(!empty(Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_Fish_lenght_check'))){
 			$lenghtchk = Fishapp_Admin_fields::get_fishapp_competition_meta_value('participant_Fish_lenght_check');
@@ -360,14 +354,26 @@ class Fishapp_Admin_fields {
 				echo '<option value="'.$listval->ID.'" '.$selecttext.'>'.$listval->post_title.'</option>';
 			}
 		echo '</select>';
-		echo '<div>';
-			echo '<label>Fish lenght</label>';
-			echo '<input type ="text" class="Fish_lenght_check" name="Fish_lenght_check" value="'.$lenghtchk.'"/>';
-		echo '</div>';
-		echo '<div>';
-			echo '<input type ="checkbox" class="Fish_release_done" name="Fish_release_done" '.$releasecheck.'/>';
-			echo '<span>Done Release Fish</span>';
-		echo '</div>';
+
+		echo '<select class="Participant_list" name="Participant_list">';
+			echo '<option>Select</option>';
+			foreach($participant_lists as $participant){
+				$selecttext_part = '';
+				if($select_parti == $participant->ID) {
+					$selecttext_part = 'selected';
+				}
+				echo '<option value="'.$participant->ID.'" '.$selecttext_part.'>'.$participant->display_name .'</option>';
+			}
+		echo '</select>';
+
+		// echo '<div>';
+		// 	echo '<label>Fish lenght</label>';
+		// 	echo '<input type ="text" class="Fish_lenght_check" name="Fish_lenght_check" value="'.$lenghtchk.'"/>';
+		// echo '</div>';
+		// echo '<div>';
+		// 	echo '<input type ="checkbox" class="Fish_release_done" name="Fish_release_done" '.$releasecheck.'/>';
+		// 	echo '<span>Done Release Fish</span>';
+		// echo '</div>';
 	}
 	
 	public static function add_metabox_for_participants_photos($post_type, $post) {
@@ -415,5 +421,31 @@ class Fishapp_Admin_fields {
     //         self::$instance = new self();
     //     }
     //     return self::$instance;
-    // }
+	// }
+	
+	//saving meta info (used for both traditional and quick-edit saves)
+    public static function save_fishapp_competition($post_id){
+		
+    	if(!empty($_POST)){
+			if(get_post_type($post_id) == "fishapp-participants"){
+				update_post_meta($post_id,'participant_upload_image',array_filter(explode(",",$_POST['participant_upload_image'])));
+				update_post_meta($post_id,'participant_upload_videos',array_filter(explode(",",$_POST['participant_upload_videos'])));
+				update_post_meta($post_id,'participant_comp_details',$_POST['compi_list']);
+				update_post_meta($post_id,'Participant_list',$_POST['Participant_list']);
+				
+				
+				update_post_meta($post_id,'participant_Fish_release_done',$_POST['Fish_release_done']);
+				update_post_meta($post_id,'participant_Fish_lenght_check',$_POST['Fish_lenght_check']);
+			}
+			if(get_post_type($post_id) == "fishapp-competition"){
+				//echo '<pre>'; print_r($_POST); echo '</pre>'; die;
+				update_post_meta($post_id,'fish_catching_atrix',$_POST['fish_catching_atrix']);
+				update_post_meta($post_id,'Bonus_points',$_POST['Bonus_points']);
+				update_post_meta($post_id,'competition_settings',$_POST['competition_settings']);
+				update_post_meta($post_id,'competition_othere_settings',$_POST['competition_othere_settings']);
+				update_post_meta($post_id,'competition_start_date',strtotime($_POST['competition_othere_settings']['compi_start_date']));
+				update_post_meta($post_id,'competition_end_date',strtotime($_POST['competition_othere_settings']['compi_end_date']));
+			}
+    	}
+	}
 }

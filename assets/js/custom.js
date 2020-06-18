@@ -3,7 +3,7 @@ jQuery(function($){
     $('input[name="stop_compi"]').click(function(){
         var checked = $(this).is(':checked');
         var compid = $(this).attr('data-id');
-        var ajax_url = 'http://localhost/finishingapp/wp-admin/admin-ajax.php';
+        var ajax_url = ajaxurl;
         console.log(checked);
         if(checked) {
             if(confirm('Are you sure you want to Stop this Competition?')){
@@ -279,7 +279,7 @@ jQuery(document).ready(function($) {
     $(".approval_setting .approval_setting_submit").click(function(e) {
         e.preventDefault();
         var vidval = $('form.approval_setting').attr('data_attavhvid');
-        var ajax_url = 'http://localhost/finishingapp/wp-admin/admin-ajax.php';
+        var ajax_url = ajaxurl;
         jQuery.ajax({
             url: ajaxurl,
             data: {

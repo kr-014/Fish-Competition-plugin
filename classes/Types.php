@@ -20,7 +20,7 @@ class Fishapp_Types {
 		if ( ! post_type_exists( 'fishapp-competition ' ) ) {
 			$labels = Fishapp_Types::post_type_labels( __( 'Competition', 'fishapp-competition' ), __( 'Competition', 'fishapp-competition' ) );
 
-			$labels['menu_name'] = __( 'Competition', 'fishapp-competition' );
+			$labels['menu_name'] = __( 'Leaderboard', 'fishapp-competition' );
 
 			$fishapp_args = apply_filters( 'fishapp_competition_post_type_args', array(
 				'labels'              => $labels,

@@ -139,7 +139,7 @@ function fill_fishapp_competition_columns( $column, $post_id ) {
                 break;
         case 'participants' :
             echo '<a href="'.site_url().'/wp-admin/edit.php?post_type=fishapp-participants&comp='.$post_id.'">View</a>';
-            echo '<a href="'.site_url().'/wp-admin/edit.php?page=drawer&comp='.$post_id.'">Draw</a>'; 
+            echo '<a href="'.site_url().'/wp-admin/edit.php?post_type=fishapp-participants&page=drawer&comp='.$post_id.'">Draw</a>'; 
                 break; 
         case 'stop_status' :
             $checks = '';
@@ -178,14 +178,14 @@ function fishapp_participants_columns($columns){
 add_action( 'manage_fishapp-participants_posts_custom_column' , 'fill_fishapp_participants_columns', 10, 2 );
 function fill_fishapp_participants_columns( $column, $post_id ) {
     // Fill in the columns with meta box info associated with each post
-    
+    $author_id = get_post_field( 'Participant_list', $post_id );
     switch ( $column ) {
         case 'image' :
-            echo '<img src="'.get_avatar_url($post_id).'" width="50px"/>';
+            echo '<img src="'.get_avatar_url($author_id).'" width="50px"/>';
             break;
         case 'participants' :
-            $author_id = get_post_field( 'post_author', $post_id );
-            $author_name = get_the_author_meta('user_nicename', $author_id);
+            
+            $author_name = get_the_author_meta('display_name', $author_id);
             echo $author_name;
                 break;
         case 'compi_rel' :
@@ -214,6 +214,9 @@ function ibenic_add_media_custom_field( $form_fields, $post ) {
     $field_value_latitude = get_post_meta( $post->ID, 'latitude', true );
     $field_value_longitude = get_post_meta( $post->ID, 'longitude', true ); 
     $field_value_approve_status = get_post_meta($post->ID, "approve_status", true);
+    $field_Fish_lenght_get = get_post_meta($post->ID, "Fish_lenght_get", true);
+
+    
 
     $form_approve_html = '<select name="approve_status" class="approve_status">';
     if($field_value_approve_status === "inreview") {
@@ -247,6 +250,12 @@ function ibenic_add_media_custom_field( $form_fields, $post ) {
         'helps' => __( 'Enter Longitude' ),
         'input'  => 'text'
     );
+    $form_fields['Fish_lenght_get'] = array(
+        'value' => $field_Fish_lenght_get ? $field_Fish_lenght_get : '',
+        'label' => __( 'Fish lenght' ),
+        'helps' => __( 'Measurement Scale Fish lenght from application' ),
+        'input'  => 'text'
+    );
     $form_fields['approve_status'] = array(
         'label' => __( 'Approve Status'),
         'helps' => __( 'Approve Status' ),
@@ -261,6 +270,7 @@ function ibenic_add_media_custom_field( $form_fields, $post ) {
 add_filter( 'attachment_fields_to_edit', 'ibenic_add_media_custom_field', null, 2 );
 
 function ibenic_save_attachment( $attachment_id ) {
+    print_r($_REQUEST);
     if ( isset( $_REQUEST['attachments'][ $attachment_id ]['latitude'] ) ) {
         $latitude_val = $_REQUEST['attachments'][ $attachment_id ]['latitude'];
         update_post_meta( $attachment_id, 'latitude', $latitude_val );
@@ -269,10 +279,15 @@ function ibenic_save_attachment( $attachment_id ) {
         $longitude_val = $_REQUEST['attachments'][ $attachment_id ]['longitude'];
         update_post_meta( $attachment_id, 'longitude', $longitude_val );
     }
+    if ( isset( $_REQUEST['attachments'][ $attachment_id ]['Fish_lenght_get'] ) ) {
+        $Fish_lenght_get = $_REQUEST['attachments'][ $attachment_id ]['Fish_lenght_get'];
+        update_post_meta( $attachment_id, 'Fish_lenght_get', $Fish_lenght_get );
+    }
     if ( isset( $_REQUEST['approve_status'] ) ) {
         $approve_status = $_REQUEST['approve_status'];
         update_post_meta( $attachment_id, 'approve_status', $approve_status );
     }
+    
 }
 add_action( 'edit_attachment', 'ibenic_save_attachment' );
 

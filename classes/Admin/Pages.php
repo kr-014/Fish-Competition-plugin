@@ -105,7 +105,7 @@ class Fishapp_Admin_Pages {
 
 	public static function fish_admin_draw_winner() {
 		$mypage = add_submenu_page( 
-			null, 
+			'edit.php?post_type=fishapp-participants', 
 			'Draw The winner', 
 			'Draw The winner', 
 			'manage_options', 
